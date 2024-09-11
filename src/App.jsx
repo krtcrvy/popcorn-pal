@@ -61,9 +61,8 @@ const App = () => {
         setMovies(data.Search);
         setError("");
       } catch (err) {
-        console.error("Fetch error:", err.message);
-
         if (err.name !== "AbortError") {
+          console.error("Fetch error:", err.message);
           setError(err.message);
         }
       } finally {
@@ -77,6 +76,7 @@ const App = () => {
       return;
     }
 
+    handleCloseMovie();
     fetchMovies();
 
     return () => {
