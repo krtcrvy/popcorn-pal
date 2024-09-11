@@ -2,9 +2,15 @@ import { useEffect, useState } from "react";
 import Loader from "./Loader";
 import StarRating from "./StarRating";
 
-const MovieDetails = ({ selectedId, onCloseMovie }) => {
+const MovieDetails = ({ selectedId, onCloseMovie, onAddWatched, watched }) => {
   const [movie, setMovie] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [userRating, setUserRating] = useState("");
+
+  const isWatched = watched.map((movie) => movie.imdbId).includes(selectedId);
+  const watchedUserRating = watched.find(
+    (movie) => movie.imdbId === selectedId,
+  )?.userRating;
 
   const {
     Title: title,
@@ -19,17 +25,40 @@ const MovieDetails = ({ selectedId, onCloseMovie }) => {
     Genre: genre,
   } = movie;
 
-  console.log(title, year);
+  const handleAdd = () => {
+    const newWatchedMovie = {
+      imdbId: selectedId,
+      title,
+      year,
+      poster,
+      imdbRating: Number(imdbRating),
+      runtime: Number(runtime.split(" ").at(0)),
+      userRating,
+    };
+
+    onAddWatched(newWatchedMovie);
+    onCloseMovie();
+  };
 
   useEffect(() => {
     const getMovieDetails = async () => {
       try {
         setIsLoading(true);
+
         const res = await fetch(
           `http://www.omdbapi.com/?apikey=${import.meta.env.VITE_API_KEY}&i=${selectedId}`,
         );
 
+        if (!res.ok) {
+          throw new Error("Something went wrong while fetching the movies.");
+        }
+
         const data = await res.json();
+
+        if (data.Response === "False") {
+          throw new Error(data.Error);
+        }
+
         setMovie(data);
       } catch (err) {
         console.error("Fetch error:", err.message);
@@ -40,6 +69,15 @@ const MovieDetails = ({ selectedId, onCloseMovie }) => {
 
     getMovieDetails();
   }, [selectedId]);
+
+  useEffect(() => {
+    if (!title) return;
+    document.title = `Movie | ${title}`;
+
+    return () => {
+      document.title = "PopcornPal";
+    };
+  }, [title]);
 
   return (
     <div className="details">
@@ -67,7 +105,30 @@ const MovieDetails = ({ selectedId, onCloseMovie }) => {
 
           <section>
             <div className="rating">
-              <StarRating maxRating={10} size={24} />
+              {!isWatched ? (
+                <>
+                  <StarRating
+                    maxRating={10}
+                    size={24}
+                    onSetRating={setUserRating}
+                  />
+
+                  {userRating > 0 && (
+                    <button
+                      type="button"
+                      className="btn-add"
+                      onClick={handleAdd}
+                    >
+                      + Add to list
+                    </button>
+                  )}
+                </>
+              ) : (
+                <p>
+                  You rated this movie {watchedUserRating}
+                  <span>⭐</span>
+                </p>
+              )}
             </div>
             <p>
               <em>{plot}</em>

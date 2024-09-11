@@ -1,13 +1,17 @@
 import WatchedMovie from "./WatchedMovie";
 
-const WatchedList = ({ watched }) => {
+const WatchedMoviesList = ({ watched, onDeleteWatched }) => {
   return (
     <ul className="list">
       {watched.map((movie) => (
-        <WatchedMovie key={movie.imdbID} movie={movie} />
+        <WatchedMovie
+          movie={movie}
+          key={movie.imdbId}
+          onDeleteWatched={onDeleteWatched}
+        />
       ))}
     </ul>
   );
 };
 
-export default WatchedList;
+export default WatchedMoviesList;
