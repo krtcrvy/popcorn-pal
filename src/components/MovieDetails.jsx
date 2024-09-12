@@ -55,7 +55,7 @@ const MovieDetails = ({ selectedId, onCloseMovie, onAddWatched, watched }) => {
         setIsLoading(true);
 
         const res = await fetch(
-          `http://www.omdbapi.com/?apikey=${import.meta.env.VITE_API_KEY}&i=${selectedId}`,
+          `https://www.omdbapi.com/?apikey=${import.meta.env.VITE_API_KEY}&i=${selectedId}`,
         );
 
         if (!res.ok) {
