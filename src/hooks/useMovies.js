@@ -16,7 +16,7 @@ export const useMovies = (query, callback) => {
         setError("");
 
         const res = await fetch(
-          `http://www.omdbapi.com/?apikey=${import.meta.env.VITE_API_KEY}&s=${query}`,
+          `https://www.omdbapi.com/?apikey=${import.meta.env.VITE_API_KEY}&s=${query}`,
           { signal: controller.signal },
         );
 
